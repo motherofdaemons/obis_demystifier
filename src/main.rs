@@ -1,7 +1,9 @@
-use std::str::FromStr;
+use clap::Parser;
 
 mod obis;
+mod args;
+mod commands;
 fn main() {
-    let obis = obis::Obis::from_str("010203040506").unwrap();
-    println!("{}", obis);
+    let cli = args::Cli::parse();
+    commands::run(cli.command);
 }
