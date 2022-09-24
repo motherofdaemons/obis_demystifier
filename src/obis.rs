@@ -3,13 +3,14 @@ use std::fmt::Display;
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
-pub struct HexObis {
+pub struct Obis {
     code: [u8; 6],
+    is_hex: bool,
 }
 
-impl HexObis {}
+impl Obis {}
 
-impl FromStr for HexObis {
+impl FromStr for Obis {
     type Err = Box<dyn Error>;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.len() != 12 {
@@ -23,11 +24,12 @@ impl FromStr for HexObis {
         let f = u8::from_str_radix(&s[10..12], 16)?;
         Ok(Self {
             code: [a, b, c, d, e, f],
+            is_hex: true,
         })
     }
 }
 
-impl Display for HexObis {
+impl Display for Obis {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
@@ -62,16 +64,17 @@ mod tests {
 
     #[test]
     fn test_hex_obis_from_str() {
-        let actual_obis = HexObis::from_str(&"ffffffffffff").unwrap();
-        let expected_obis = HexObis {
+        let actual_obis = Obis::from_str(&"ffffffffffff").unwrap();
+        let expected_obis = Obis {
             code: [255, 255, 255, 255, 255, 255],
+            is_hex: true,
         };
         assert_eq!(actual_obis, expected_obis);
     }
 
     #[test]
     fn test_hex_obis_too_few_chars() {
-        let actual_error = HexObis::from_str(&"a").unwrap_err();
+        let actual_error = Obis::from_str(&"a").unwrap_err();
         assert!(actual_error.is::<HexObisError>());
         let actual_error = *actual_error.downcast::<HexObisError>().unwrap();
         let expected_error = HexObisError::InavlidInputStringLen(1);
@@ -80,16 +83,16 @@ mod tests {
 
     #[test]
     fn test_hex_obis_too_many_chars() {
-        let actual_error = HexObis::from_str(&"aaaaaaaaaaaaa").unwrap_err();
+        let actual_error = Obis::from_str(&"aaaaaaaaaaaaa").unwrap_err();
         assert!(actual_error.is::<HexObisError>());
         let actual_error = *actual_error.downcast::<HexObisError>().unwrap();
         let expected_error = HexObisError::InavlidInputStringLen(13);
         assert_eq!(actual_error, expected_error);
     }
-    
+
     #[test]
     fn test_hex_obis_bad_chars() {
-        let actual_error = HexObis::from_str(&"!!!!!!!!!!!!").unwrap_err();
+        let actual_error = Obis::from_str(&"!!!!!!!!!!!!").unwrap_err();
         assert!(actual_error.is::<ParseIntError>());
     }
 }

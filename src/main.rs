@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
-mod hex_obis;
+mod obis;
 fn main() {
-    let obis = hex_obis::HexObis::from_str("010203040506").unwrap();
+    let obis = obis::Obis::from_str("010203040506").unwrap();
     println!("{}", obis);
 }
